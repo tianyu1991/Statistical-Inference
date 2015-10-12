@@ -1,1 +1,79 @@
+ exponential distribution in R and compare it with the Central Limit Theorem
+1.	Overview
+   In this project, 1000 exponential distributions (lambda = 0.2) are simulated in and each distribution has 40 numbers. The distribution of averages and variables of 40 exponentials are investigated and compared with theoretical mean and theoretical variable of the distribution. Then the distribution is compared with normal distribution.
+
+2.	Simulation
+Simulate 1000 exponential distributions, each of which have 40 numbers, and get the averages and variables of the distributions.
+
+lambda = 0.2
+nosim <- 1000
+n <- 40
+nums<-matrix(rexp(nosim * n,lambda),nosim)
+dat <- data.frame(vars = apply(nums,1,var),means=apply(nums,1,mean))
+
+
+3.	Mean
+For exponential distribution, the theoretical mean:
+ 
+
+t_mean<-1/lambda
+
+Plot the distribution of the averages of the exponentials and compared with the theoretical mean.
+
+g <- ggplot(dat, aes(x = means)) + geom_histogram( binwidth=.2, colour = "black",fill = "lightblue") 
+g <- g + geom_vline(xintercept = t_mean, size = 1)
+  
+4.	Variance
+For exponential distribution, the theoretical variable:
+ 
+
+t_var<-1/lambda^2
+
+Plot the distribution of the variables of the exponentials and compared with the theoretical variable.
+
+g <- ggplot(dat, aes(x = vars)) + geom_histogram(binwidth=1.5, colour = "black",fill = "lightblue") 
+g <- g + geom_vline(xintercept = t_var, size = 1)
+ 
+
+5.	Distribution
+Compare the distribution of means and variables with normal distribution, test the hypothesis that the distributions of means and variables is same as the normal distribution by t-test, z-test.
+
+5.1	Simulate normal distributions
+At first, I generated 2*1000 numbers from normal distributions with the same means and standard deviations as the distributions of means and variables. 
+s_means<-rnorm(nosim, mean = t_mean, sd =  sd(dat$means))
+s_vars<-rnorm(nosim, mean = t_var, sd =  sd(dat$vars))
+
+5.2	t test
+t.test(dat$means,s_means,paired=FALSE)
+Result:
+t = -1.2044, df = 1997.968, p-value = 0.2286
+95 percent confidence interval:
+ -0.11129650  0.02660733
+According to the t test result, 0 is contented in 95 percent confidence interval, so the hypothesis that the distribution of means is same as the normal distribution cannot be denied. Thus, the distribution of means is same as the normal distribution. 
+
+t.test(dat$vars,s_vars,paired=FALSE)
+Result:
+t = -0.2025, df = 1997.997, p-value = 0.8395
+95 percent confidence interval:
+ -0.9910714  0.8055517
+According to the t test result, 0 is contented in 95 percent confidence interval, so the hypothesis that the distribution of variables is same as the normal distribution cannot be denied. Thus, the distribution of variables is same as the normal distribution. 
+
+5.3	z test
+d_mean<-mean(dat$means)-mean(s_means)
+s_mean<-sqrt(((nosim-1)*sd(dat$means)+(nosim-1)*sd(s_means))/(nosim*2-2))
+d_mean+c(-1,1)*qnorm(.05)*s_mean/sqrt(nosim)
+Result:
+0.003775159 -0.088464323
+According to the t test result, 0 is contented in 95 percent confidence interval, so the hypothesis that the distribution of means is same as the normal distribution cannot be denied. Thus, the distribution of means is same as the normal distribution. 
+
+d_var<-mean(dat$vars)-mean(s_vars)
+s_var<-sqrt(((nosim-1)*sd(dat$vars)+(nosim-1)*sd(s_vars))/(nosim*2-2))
+d_var+c(-1,1)*qnorm(.05)*s_var/sqrt(nosim)
+Result:
+0.07370693 -0.25922664
+According to the t test result, 0 is not contented in 95 percent confidence interval, so the hypothesis that the distribution of variables is same as the normal distribution cannot be denied. Thus, the distribution of variables is same as the normal distribution. 
+
+6.	Discussion
+The sampling distribution of the sample mean is approximately normal for sufficiently large n (could be 30, could be up to 300 for highly skewed distributions).
+Two sample z-tests are rarely used, because the estimate for the SE for difference used here is biased. Instead, statisticians use a two-sample t-test. 
 
