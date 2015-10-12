@@ -28,9 +28,9 @@ t_var= -0.2278
 
 #z_test
 d_mean<-mean(dat$means)-mean(s_means)
-s_mean<-sd(dat$means)-sd(s_means)
+s_mean<-sqrt(((nosim-1)*sd(dat$means)+(nosim-1)*sd(s_means))/(nosim*2-2))
 d_mean+c(-1,1)*qnorm(.05)*s_mean/sqrt(nosim)
 
 d_var<-mean(dat$vars)-mean(s_vars)
-s_var<-sd(dat$vars)-sd(s_vars)
+s_var<-sqrt(((nosim-1)*sd(dat$vars)+(nosim-1)*sd(s_vars))/(nosim*2-2))
 d_var+c(-1,1)*qnorm(.05)*s_var/sqrt(nosim)
